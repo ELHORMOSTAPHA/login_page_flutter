@@ -5,12 +5,22 @@ const theme = {"dark", "light", "danger", "success"};
 class Button extends StatelessWidget {
   final String theme;
   final String title;
-  Button({super.key, required this.theme, required this.title});
+  final VoidCallback onPressed;
+
+  Button({
+    super.key,
+    required this.theme,
+    required this.title,
+    required this.onPressed,
+  });
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
+        onTap: () {
+          onPressed();
+        },
         child: Container(
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(

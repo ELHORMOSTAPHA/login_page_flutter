@@ -15,6 +15,12 @@ class Inputfield extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
+        // autovalidateMode:,
+        validator: (value) {
+          if (value!.length < 5) {
+            return "this field is required";
+          }
+        },
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
@@ -22,6 +28,10 @@ class Inputfield extends StatelessWidget {
           border: OutlineInputBorder(),
           filled: true,
           fillColor: Colors.white,
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red[900]!),
+            borderRadius: BorderRadius.circular(10),
+          ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(10),
