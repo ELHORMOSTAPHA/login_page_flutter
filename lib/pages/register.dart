@@ -3,11 +3,11 @@ import 'package:login_page_1/components/InputField.dart';
 import 'package:login_page_1/components/button.dart';
 import 'package:login_page_1/components/squareButton.dart';
 
-class Login extends StatelessWidget {
+class Register extends StatelessWidget {
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  Login({super.key});
+  Register({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,8 +15,6 @@ class Login extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ListView(
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // SizedBox(height: 50),
               //logo
@@ -29,12 +27,18 @@ class Login extends StatelessWidget {
                   style: TextStyle(color: Colors.grey[700], fontSize: 16),
                 ),
               ),
-              SizedBox(height: 50),
+              SizedBox(height: 20),
               Form(
                 autovalidateMode: AutovalidateMode.onUnfocus,
                 key: formKey,
                 child: Column(
                   children: [
+                    Inputfield(
+                      obscureText: false,
+                      controller: userNameController,
+                      hintText: "Full Name",
+                    ),
+                    SizedBox(height: 20),
                     Inputfield(
                       obscureText: false,
                       controller: userNameController,
@@ -50,22 +54,11 @@ class Login extends StatelessWidget {
                   ],
                 ),
               ),
-
-              //textfield username
-              SizedBox(height: 8),
-              //forget password
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [Text("Forget Password?")],
-                ),
-              ),
               //sing in button
               SizedBox(height: 20),
               Button(
                 theme: "dark",
-                title: "Sing In",
+                title: "Sing Up",
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     print("this form is valid");
@@ -102,7 +95,7 @@ class Login extends StatelessWidget {
               Row(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text("New Member !"), Text("Sing Up")],
+                children: [Text("Already have account !"), Text("Sing In")],
               ),
             ],
           ),

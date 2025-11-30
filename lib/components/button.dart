@@ -30,7 +30,7 @@ class Button extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              "Sign In",
+              title,
               style: TextStyle(
                 color: theme == "dark" ? Colors.white : Colors.black,
                 fontSize: 16,
