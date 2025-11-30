@@ -3,11 +3,20 @@ import 'package:login_page_1/components/InputField.dart';
 import 'package:login_page_1/components/button.dart';
 import 'package:login_page_1/components/squareButton.dart';
 
-class Login extends StatelessWidget {
-  final userNameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+class Login extends StatefulWidget {
   Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final userNameController = TextEditingController();
+
+  final passwordController = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,8 +74,11 @@ class Login extends StatelessWidget {
               SizedBox(height: 20),
               Button(
                 theme: "dark",
-                title: "Sing In",
+                title: loading ? "loading..." : "Sign In",
                 onPressed: () {
+                  setState(() {
+                    loading = !loading;
+                  });
                   if (formKey.currentState!.validate()) {
                     print("this form is valid");
                   } else {
@@ -102,7 +114,22 @@ class Login extends StatelessWidget {
               Row(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text("New Member !"), Text("Sing Up")],
+                children: [
+                  Text(
+                    "New Member !",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  GestureDetector(
+                    child: Text(
+                      "Sing Up",
+                      style: TextStyle(
+                        color: Colors.blue[800],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -111,3 +138,4 @@ class Login extends StatelessWidget {
     );
   }
 }
+// navigator.of(context).push(materialPageRoute(builder:(context) =>AboutUs()))
