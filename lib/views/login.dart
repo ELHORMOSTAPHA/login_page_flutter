@@ -1,7 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:login_page_1/components/InputField.dart';
-import 'package:login_page_1/components/button.dart';
-import 'package:login_page_1/components/squareButton.dart';
+import 'package:login_page_1/views/components/InputField.dart';
+import 'package:login_page_1/views/components/button.dart';
+import 'package:login_page_1/views/components/squareButton.dart';
+import 'package:login_page_1/views/home.dart';
+import 'package:login_page_1/views/provider/model.dart';
+import 'package:login_page_1/views/register.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   Login({super.key});
@@ -73,14 +80,47 @@ class _LoginState extends State<Login> {
               //sing in button
               SizedBox(height: 20),
               Button(
+                isLoading: loading,
                 theme: "dark",
-                title: loading ? "loading..." : "Sign In",
-                onPressed: () {
-                  setState(() {
-                    loading = !loading;
-                  });
+                title: "Sign In",
+                onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     print("this form is valid");
+                    setState(() {
+                      loading = true;
+                    });
+                    try {
+                      var response = await post(
+                        Uri.parse("http://10.0.2.2:8000/api/v1/auth/login"),
+                        headers: {
+                          "Content-Type": "application/json",
+                          "Accept": "application/json",
+                        },
+                        body: jsonEncode({
+                          "email": userNameController.text,
+                          "password": passwordController.text,
+                          "device_type": "mobile",
+                        }),
+                      );
+
+                      print("RAW: ${response.body}");
+
+                      var responsejson = jsonDecode(response.body);
+                      print(responsejson["message"]);
+                      if (response.statusCode == 200) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => Home()),
+                        );
+                      }
+                      setState(() {
+                        loading = false;
+                      });
+                    } catch (e) {
+                      setState(() {
+                        loading = false;
+                      });
+                      print("Error: $e");
+                    }
                   } else {
                     print("this form is not valide");
                   }
@@ -120,6 +160,11 @@ class _LoginState extends State<Login> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Register()),
+                      );
+                    },
                     child: Text(
                       "Sing Up",
                       style: TextStyle(
@@ -131,6 +176,36 @@ class _LoginState extends State<Login> {
                   ),
                 ],
               ),
+              Selector<Model, int>(
+                selector: (context, Model1) => Model1.counter,
+                builder: (context, Model1, child) {
+                  print("build value");
+                  return Column(children: [Text("values : ${Model1}")]);
+                },
+              ),
+              Consumer<Model>(
+                builder: (context, Model, child) {
+                  return MaterialButton(
+                    onPressed: () {
+                      Model.increment();
+                    },
+                    child: Icon(Icons.plus_one),
+                  );
+                },
+              ),
+              // Consumer<Model>(
+              //   builder: (context, Model, child) {
+              //     print("build value 2");
+              //     return Center(child: Text("value 2 ${Model.counter2}"));
+              //   },
+              // ),
+              Selector<Model, int>(
+                selector: (context, modelValue2) => modelValue2.counter2,
+                builder: (context, modelValue2, child) {
+                  print("build value2 ");
+                  return Center(child: Text("value 2 ${modelValue2}"));
+                },
+              ),
             ],
           ),
         ),
@@ -138,4 +213,6 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
+
 // navigator.of(context).push(materialPageRoute(builder:(context) =>AboutUs()))

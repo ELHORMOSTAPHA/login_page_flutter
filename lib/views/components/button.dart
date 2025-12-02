@@ -6,12 +6,13 @@ class Button extends StatelessWidget {
   final String theme;
   final String title;
   final VoidCallback onPressed;
-
+  bool isLoading = false;
   Button({
     super.key,
     required this.theme,
     required this.title,
     required this.onPressed,
+    required this.isLoading,
   });
   @override
   Widget build(BuildContext context) {
@@ -29,14 +30,16 @@ class Button extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: theme == "dark" ? Colors.white : Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: isLoading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text(
+                    title,
+                    style: TextStyle(
+                      color: theme == "dark" ? Colors.white : Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ),
         ),
       ),

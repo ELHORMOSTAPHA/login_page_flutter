@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:login_page_1/components/InputField.dart';
-import 'package:login_page_1/components/button.dart';
-import 'package:login_page_1/components/squareButton.dart';
+import 'package:login_page_1/views/components/InputField.dart';
+import 'package:login_page_1/views/components/button.dart';
+import 'package:login_page_1/views/components/squareButton.dart';
+import 'package:login_page_1/views/login.dart';
+import 'package:login_page_1/views/provider/model.dart';
+import 'package:provider/provider.dart';
 
-class Register extends StatelessWidget {
-  final userNameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+class Register extends StatefulWidget {
   Register({super.key});
+
+  @override
+  State<Register> createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  final userNameController = TextEditingController();
+
+  final passwordController = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,6 +69,7 @@ class Register extends StatelessWidget {
               //sing in button
               SizedBox(height: 20),
               Button(
+                isLoading: false,
                 theme: "dark",
                 title: "Sing Up",
                 onPressed: () {
@@ -95,7 +108,32 @@ class Register extends StatelessWidget {
               Row(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text("Already have account !"), Text("Sing In")],
+                children: [
+                  Text(
+                    "Already have account !",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(
+                        context,
+                      ).push(MaterialPageRoute(builder: (context) => Login()));
+                    },
+                    child: Text(
+                      "Sing In",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.blue[800],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Consumer<Model>(
+                builder: (context, Model, child) {
+                  return Center(child: Text(" value : ${Model.getCounter()}"));
+                },
               ),
             ],
           ),
