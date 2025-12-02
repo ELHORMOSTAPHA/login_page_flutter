@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:login_page_1/views/provider/model.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   Home({super.key});
@@ -11,6 +13,21 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Container(child: Text("home page")));
+    return Scaffold(
+      body: Container(
+        child: Center(
+          child: Selector<Session_user, Map>(
+            selector: (context, session) => session.user,
+            builder: (context, user, child) {
+              return Center(
+                child: Text(
+                  "weclome ${user["fullname"]} ton email est ${user["email"]}",
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }

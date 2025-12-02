@@ -79,51 +79,62 @@ class _LoginState extends State<Login> {
               ),
               //sing in button
               SizedBox(height: 20),
-              Button(
-                isLoading: loading,
-                theme: "dark",
-                title: "Sign In",
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    print("this form is valid");
-                    setState(() {
-                      loading = true;
-                    });
-                    try {
-                      var response = await post(
-                        Uri.parse("http://10.0.2.2:8000/api/v1/auth/login"),
-                        headers: {
-                          "Content-Type": "application/json",
-                          "Accept": "application/json",
-                        },
-                        body: jsonEncode({
-                          "email": userNameController.text,
-                          "password": passwordController.text,
-                          "device_type": "mobile",
-                        }),
-                      );
+              Selector<Session_user, Function(String, String)>(
+                selector: (context, session) => session.setUser,
+                builder: (context, AddUser, child) {
+                  return Button(
+                    isLoading: loading,
+                    theme: "dark",
+                    title: "Sign In",
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        print("this form is valid");
+                        setState(() {
+                          loading = true;
+                        });
+                        try {
+                          var response = await post(
+                            Uri.parse("http://10.0.2.2:8000/api/v1/auth/login"),
+                            headers: {
+                              "Content-Type": "application/json",
+                              "Accept": "application/json",
+                            },
+                            body: jsonEncode({
+                              "email": userNameController.text,
+                              "password": passwordController.text,
+                              "device_type": "mobile",
+                            }),
+                          );
 
-                      print("RAW: ${response.body}");
+                          // print("RAW: ${response.body}");
 
-                      var responsejson = jsonDecode(response.body);
-                      print(responsejson["message"]);
-                      if (response.statusCode == 200) {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => Home()),
-                        );
+                          var responsejson = jsonDecode(response.body);
+                          print("repsonse -------");
+                          print(responsejson["user"]);
+                          print(responsejson["user"]["name"]);
+                          if (response.statusCode == 200) {
+                            AddUser(
+                              responsejson["user"]["name"],
+                              responsejson["user"]["email"],
+                            );
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => Home()),
+                            );
+                          }
+                          setState(() {
+                            loading = false;
+                          });
+                        } catch (e) {
+                          setState(() {
+                            loading = false;
+                          });
+                          print("Error: $e");
+                        }
+                      } else {
+                        print("this form is not valide");
                       }
-                      setState(() {
-                        loading = false;
-                      });
-                    } catch (e) {
-                      setState(() {
-                        loading = false;
-                      });
-                      print("Error: $e");
-                    }
-                  } else {
-                    print("this form is not valide");
-                  }
+                    },
+                  );
                 },
               ),
               //----or----
@@ -188,17 +199,6 @@ class _LoginState extends State<Login> {
                   return Center(child: Text("${isAuth}"));
                 },
               ),
-              // Consumer<Session_user>(
-              //   builder: (context, Session_user, child) {
-              //     print("lgout consumer");
-              //     return MaterialButton(
-              //       onPressed: () {
-              //         Session_user.Logout();
-              //       },
-              //       child: Text("logout"),
-              //     );
-              //   },
-              // ),
               Selector<Session_user, VoidCallback>(
                 selector: (context, session) => session.Logout,
                 builder: (context, logoutFn, child) {
