@@ -17,8 +17,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<Model>(
-      create: (context) => Model(),
+    return ChangeNotifierProvider<Session_user>(
+      create: (context) => Session_user(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(body: Login()),

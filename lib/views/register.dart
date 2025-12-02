@@ -130,11 +130,6 @@ class _RegisterState extends State<Register> {
                   ),
                 ],
               ),
-              Consumer<Model>(
-                builder: (context, Model, child) {
-                  return Center(child: Text(" value : ${Model.getCounter()}"));
-                },
-              ),
             ],
           ),
         ),

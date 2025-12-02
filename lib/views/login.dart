@@ -176,34 +176,51 @@ class _LoginState extends State<Login> {
                   ),
                 ],
               ),
-              Selector<Model, int>(
-                selector: (context, Model1) => Model1.counter,
-                builder: (context, Model1, child) {
-                  print("build value");
-                  return Column(children: [Text("values : ${Model1}")]);
+              Consumer<Session_user>(
+                builder: (context, Session_user, child) {
+                  return Center(child: Text("${Session_user.is_auth}"));
                 },
               ),
-              Consumer<Model>(
-                builder: (context, Model, child) {
+              Selector<Session_user, bool>(
+                selector: (context, isAuth) => isAuth.is_auth,
+                builder: (context, isAuth, child) {
+                  print("login value");
+                  return Center(child: Text("${isAuth}"));
+                },
+              ),
+              // Consumer<Session_user>(
+              //   builder: (context, Session_user, child) {
+              //     print("lgout consumer");
+              //     return MaterialButton(
+              //       onPressed: () {
+              //         Session_user.Logout();
+              //       },
+              //       child: Text("logout"),
+              //     );
+              //   },
+              // ),
+              Selector<Session_user, VoidCallback>(
+                selector: (context, session) => session.Logout,
+                builder: (context, logoutFn, child) {
+                  print("logout selector");
                   return MaterialButton(
                     onPressed: () {
-                      Model.increment();
+                      logoutFn();
                     },
-                    child: Icon(Icons.plus_one),
+                    child: Text("Logout"),
                   );
                 },
               ),
-              // Consumer<Model>(
-              //   builder: (context, Model, child) {
-              //     print("build value 2");
-              //     return Center(child: Text("value 2 ${Model.counter2}"));
-              //   },
-              // ),
-              Selector<Model, int>(
-                selector: (context, modelValue2) => modelValue2.counter2,
-                builder: (context, modelValue2, child) {
-                  print("build value2 ");
-                  return Center(child: Text("value 2 ${modelValue2}"));
+              Selector<Session_user, VoidCallback>(
+                selector: (context, session) => session.login,
+                builder: (context, loginFn, child) {
+                  print("login selector");
+                  return MaterialButton(
+                    onPressed: () {
+                      loginFn();
+                    },
+                    child: Text("login"),
+                  );
                 },
               ),
             ],
