@@ -5,7 +5,7 @@ import 'package:login_page_1/views/components/InputField.dart';
 import 'package:login_page_1/views/components/button.dart';
 import 'package:login_page_1/views/components/squareButton.dart';
 import 'package:login_page_1/views/home.dart';
-import 'package:login_page_1/views/provider/model.dart';
+import 'package:login_page_1/views/provider/session.dart';
 import 'package:login_page_1/views/register.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -79,9 +79,9 @@ class _LoginState extends State<Login> {
               ),
               //sing in button
               SizedBox(height: 20),
-              Selector<Session_user, Function(String, String)>(
-                selector: (context, session) => session.setUser,
-                builder: (context, AddUser, child) {
+              Selector<SessionUser, Function(String name, String email)>(
+                selector: (context, loginFn) => loginFn.login,
+                builder: (context, login, child) {
                   return Button(
                     isLoading: loading,
                     theme: "dark",
@@ -113,7 +113,7 @@ class _LoginState extends State<Login> {
                           print(responsejson["user"]);
                           print(responsejson["user"]["name"]);
                           if (response.statusCode == 200) {
-                            AddUser(
+                            login(
                               responsejson["user"]["name"],
                               responsejson["user"]["email"],
                             );
@@ -186,42 +186,6 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ],
-              ),
-              Consumer<Session_user>(
-                builder: (context, Session_user, child) {
-                  return Center(child: Text("${Session_user.is_auth}"));
-                },
-              ),
-              Selector<Session_user, bool>(
-                selector: (context, isAuth) => isAuth.is_auth,
-                builder: (context, isAuth, child) {
-                  print("login value");
-                  return Center(child: Text("${isAuth}"));
-                },
-              ),
-              Selector<Session_user, VoidCallback>(
-                selector: (context, session) => session.Logout,
-                builder: (context, logoutFn, child) {
-                  print("logout selector");
-                  return MaterialButton(
-                    onPressed: () {
-                      logoutFn();
-                    },
-                    child: Text("Logout"),
-                  );
-                },
-              ),
-              Selector<Session_user, VoidCallback>(
-                selector: (context, session) => session.login,
-                builder: (context, loginFn, child) {
-                  print("login selector");
-                  return MaterialButton(
-                    onPressed: () {
-                      loginFn();
-                    },
-                    child: Text("login"),
-                  );
-                },
               ),
             ],
           ),

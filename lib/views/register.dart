@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:login_page_1/views/components/InputField.dart';
 import 'package:login_page_1/views/components/button.dart';
 import 'package:login_page_1/views/components/squareButton.dart';
+import 'package:login_page_1/views/home.dart';
 import 'package:login_page_1/views/login.dart';
-import 'package:login_page_1/views/provider/model.dart';
+import 'package:login_page_1/views/provider/session.dart';
 import 'package:provider/provider.dart';
 
 class Register extends StatefulWidget {
@@ -15,10 +19,10 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final userNameController = TextEditingController();
-
   final passwordController = TextEditingController();
-
+  final emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +57,7 @@ class _RegisterState extends State<Register> {
                     SizedBox(height: 20),
                     Inputfield(
                       obscureText: false,
-                      controller: userNameController,
+                      controller: emailController,
                       hintText: "Email or UserName",
                     ),
                     SizedBox(height: 20),
@@ -68,16 +72,64 @@ class _RegisterState extends State<Register> {
               ),
               //sing in button
               SizedBox(height: 20),
-              Button(
-                isLoading: false,
-                theme: "dark",
-                title: "Sing Up",
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    print("this form is valid");
-                  } else {
-                    print("this form is not valide");
-                  }
+              Selector<SessionUser, Function(String name, String email)>(
+                selector: (context, sessionUser) => sessionUser.login,
+                builder: (context, login, child) {
+                  return Button(
+                    isLoading: isLoading,
+                    theme: "dark",
+                    title: "Sing Up",
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        try {
+                          var response = await post(
+                            Uri.parse(
+                              "http://10.0.2.2:8000/api/v1/auth/signup",
+                            ),
+                            headers: {
+                              "Content-Type": "application/json",
+                              "Accept": "application/json",
+                            },
+                            body: jsonEncode({
+                              "name": userNameController.text,
+                              "email": emailController.text,
+                              "password": passwordController.text,
+                              "device_type": "mobile",
+                            }),
+                          );
+                          var responseJson = jsonDecode(response.body);
+                          print("response=----");
+                          print(responseJson);
+                          if (response.statusCode == 200) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                            login(
+                              responseJson["user"]["name"],
+                              responseJson["user"]["email"],
+                            );
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => Home()),
+                            );
+                          }
+                          setState(() {
+                            isLoading = false;
+                          });
+                        } catch (e) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          print("error: ${e}");
+                        }
+                        print("this form is valid");
+                      } else {
+                        print("this form is not valide");
+                      }
+                    },
+                  );
                 },
               ),
               //----or----
