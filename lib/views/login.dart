@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:login_page_1/views/components/InputField.dart';
 import 'package:login_page_1/views/components/button.dart';
 import 'package:login_page_1/views/components/squareButton.dart';
@@ -117,9 +118,10 @@ class _LoginState extends State<Login> {
                               responsejson["user"]["name"],
                               responsejson["user"]["email"],
                             );
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) => Home()),
-                            );
+                            // Navigator.of(context).pushReplacement(
+                            //   MaterialPageRoute(builder: (context) => Home()),
+                            // );
+                            Get.to(Home());
                           }
                           setState(() {
                             loading = false;
@@ -172,9 +174,10 @@ class _LoginState extends State<Login> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => Register()),
-                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(builder: (context) => Register()),
+                      // );
+                      Get.to(Register());
                     },
                     child: Text(
                       "Sing Up",

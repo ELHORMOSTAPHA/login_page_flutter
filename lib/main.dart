@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:login_page_1/views/home.dart';
 import 'package:login_page_1/views/login.dart';
 import 'package:login_page_1/views/provider/UserProduct.dart';
 import 'package:login_page_1/views/provider/model.dart';
@@ -24,9 +27,10 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => Model()),
         ChangeNotifierProvider(create: (context) => UserProduct()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(body: Login()),
+        getPages: [GetPage(name: "/home", page: () => Home())],
       ),
     );
   }

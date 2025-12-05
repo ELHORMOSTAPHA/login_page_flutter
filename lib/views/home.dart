@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
 import 'package:login_page_1/views/components/cardprocut.dart';
 import 'package:login_page_1/views/interfaces/global.dart';
 import 'package:login_page_1/views/interfaces/user.dart';
