@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
 import 'package:http/http.dart';
+import 'package:login_page_1/controller/authcontroller.dart';
 import 'package:login_page_1/views/components/InputField.dart';
 import 'package:login_page_1/views/components/button.dart';
 import 'package:login_page_1/views/components/squareButton.dart';
@@ -24,6 +25,7 @@ class _RegisterState extends State<Register> {
   final passwordController = TextEditingController();
   final emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  final Authcontroller _authcontroller = Get.put(Authcontroller());
   bool isLoading = false;
 
   @override
@@ -74,67 +76,24 @@ class _RegisterState extends State<Register> {
               ),
               //sing in button
               SizedBox(height: 20),
-              Selector<SessionUser, Function(String name, String email)>(
-                selector: (context, sessionUser) => sessionUser.login,
-                builder: (context, login, child) {
-                  return Button(
-                    isLoading: isLoading,
-                    theme: "dark",
-                    title: "Sing Up",
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        try {
-                          var response = await post(
-                            Uri.parse(
-                              "http://10.0.2.2:8000/api/v1/auth/signup",
-                            ),
-                            headers: {
-                              "Content-Type": "application/json",
-                              "Accept": "application/json",
-                            },
-                            body: jsonEncode({
-                              "name": userNameController.text,
-                              "email": emailController.text,
-                              "password": passwordController.text,
-                              "device_type": "mobile",
-                            }),
-                          );
-                          var responseJson = jsonDecode(response.body);
-                          print("response=----");
-                          print(responseJson);
-                          if (response.statusCode == 200) {
-                            setState(() {
-                              isLoading = false;
-                            });
-                            login(
-                              responseJson["user"]["name"],
-                              responseJson["user"]["email"],
-                            );
-                            Get.to(Home());
-                            // Navigator.of(context).pushReplacement(
-                            //   MaterialPageRoute(builder: (context) => Home()),
-                            // );
-                          }
-                          setState(() {
-                            isLoading = false;
-                          });
-                        } catch (e) {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          print("error: ${e}");
-                        }
-                        print("this form is valid");
-                      } else {
-                        print("this form is not valide");
-                      }
-                    },
-                  );
-                },
-              ),
+              Obx(() {
+                return Button(
+                  isLoading: _authcontroller.isLoading.value,
+                  theme: "dark",
+                  title: "Sing Up",
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      _authcontroller.register(
+                        email: emailController.text,
+                        name: userNameController.text,
+                        password: passwordController.text,
+                      );
+                    } else {
+                      print("this form is not valide");
+                    }
+                  },
+                );
+              }),
               //----or----
               SizedBox(height: 20),
               Padding(
@@ -170,7 +129,7 @@ class _RegisterState extends State<Register> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Get.to(Login());
+                      Get.to(() => Login());
                       // Navigator.of(
                       //   context,
                       // ).push(MaterialPageRoute(builder: (context) => Login()));

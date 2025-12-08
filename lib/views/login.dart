@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:login_page_1/controller/authcontroller.dart';
 import 'package:login_page_1/views/components/InputField.dart';
 import 'package:login_page_1/views/components/button.dart';
 import 'package:login_page_1/views/components/squareButton.dart';
@@ -24,6 +26,7 @@ class _LoginState extends State<Login> {
   final passwordController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
+  final Authcontroller _authcontroller = Get.put(Authcontroller());
   bool loading = false;
   @override
   Widget build(BuildContext context) {
@@ -80,65 +83,23 @@ class _LoginState extends State<Login> {
               ),
               //sing in button
               SizedBox(height: 20),
-              Selector<SessionUser, Function(String name, String email)>(
-                selector: (context, loginFn) => loginFn.login,
-                builder: (context, login, child) {
-                  return Button(
-                    isLoading: loading,
-                    theme: "dark",
-                    title: "Sign In",
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        print("this form is valid");
-                        setState(() {
-                          loading = true;
-                        });
-                        try {
-                          var response = await post(
-                            Uri.parse("http://10.0.2.2:8000/api/v1/auth/login"),
-                            headers: {
-                              "Content-Type": "application/json",
-                              "Accept": "application/json",
-                            },
-                            body: jsonEncode({
-                              "email": userNameController.text,
-                              "password": passwordController.text,
-                              "device_type": "mobile",
-                            }),
-                          );
-
-                          // print("RAW: ${response.body}");
-
-                          var responsejson = jsonDecode(response.body);
-                          print("repsonse -------");
-                          print(responsejson["user"]);
-                          print(responsejson["user"]["name"]);
-                          if (response.statusCode == 200) {
-                            login(
-                              responsejson["user"]["name"],
-                              responsejson["user"]["email"],
-                            );
-                            // Navigator.of(context).pushReplacement(
-                            //   MaterialPageRoute(builder: (context) => Home()),
-                            // );
-                            Get.to(Home());
-                          }
-                          setState(() {
-                            loading = false;
-                          });
-                        } catch (e) {
-                          setState(() {
-                            loading = false;
-                          });
-                          print("Error: $e");
-                        }
-                      } else {
-                        print("this form is not valide");
-                      }
-                    },
-                  );
-                },
-              ),
+              Obx(() {
+                return Button(
+                  isLoading: _authcontroller.isLoading.value,
+                  theme: "dark",
+                  title: "Sign In",
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      await _authcontroller.login(
+                        email: userNameController.text,
+                        password: passwordController.text,
+                      );
+                    } else {
+                      print("not valide form");
+                    }
+                  },
+                );
+              }),
               //----or----
               SizedBox(height: 20),
               Padding(
@@ -177,7 +138,7 @@ class _LoginState extends State<Login> {
                       // Navigator.of(context).push(
                       //   MaterialPageRoute(builder: (context) => Register()),
                       // );
-                      Get.to(Register());
+                      Get.to(() => Register());
                     },
                     child: Text(
                       "Sing Up",

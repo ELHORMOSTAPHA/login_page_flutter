@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
+import 'package:login_page_1/controller/Homecontroller.dart';
+import 'package:login_page_1/views/components/SearchInput.dart';
 import 'package:login_page_1/views/components/cardprocut.dart';
 import 'package:login_page_1/views/interfaces/global.dart';
 import 'package:login_page_1/views/interfaces/user.dart';
@@ -17,6 +19,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final searchController = TextEditingController();
+  final Homecontroller _homeController = Get.put(Homecontroller());
+
+  final formKey = GlobalKey<FormState>();
   List<Item> items = [
     Item(
       pathImage: "assets/images/products/product1.png",
@@ -98,30 +104,45 @@ class _HomeState extends State<Home> {
         color: Colors.grey[200],
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: ListView.builder(
-            itemCount: items.length - 1,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  Row(
-                    spacing: 10,
-                    children: [
-                      CardProduct(
-                        pathImage: items[index].pathImage,
-                        title: items[index].title,
-                        price: items[index].price,
-                      ),
-                      CardProduct(
-                        pathImage: items[index + 1].pathImage,
-                        title: items[index + 1].title,
-                        price: items[index + 1].price,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 40),
-                ],
-              );
-            },
+          child: Column(
+            children: [
+              Form(
+                key: formKey,
+                child: Searchinput(
+                  controller: searchController,
+                  hinttext: "Search for product",
+                  onchange: _homeController.search,
+                ),
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: items.length - 1,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        Row(
+                          spacing: 10,
+                          children: [
+                            CardProduct(
+                              pathImage: items[index].pathImage,
+                              title: items[index].title,
+                              price: items[index].price,
+                            ),
+                            CardProduct(
+                              pathImage: items[index + 1].pathImage,
+                              title: items[index + 1].title,
+                              price: items[index + 1].price,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 40),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
